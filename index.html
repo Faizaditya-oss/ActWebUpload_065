@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>File Uploader</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+          colors: {
+            brand: { DEFAULT: '#2563eb', hover: '#1d4ed8', light: '#eff6ff', border: '#bfdbfe' }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    .drop-active { border-color: #2563eb !important; background-color: #eff6ff !important; }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen font-sans antialiased">
+
+  <!-- Navbar -->
+  <nav class="bg-white border-b border-gray-200">
+    <div class="max-w-2xl mx-auto px-6 h-14 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <div class="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center">
+          <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/>
+          </svg>
+        </div>
+        <span class="text-sm font-600 text-gray-800 font-semibold tracking-tight">FILE UPLOADER</span>
+      </div>
+      <a href="gallery.php"
+         class="inline-flex items-center gap-1.5 text-sm text-blue-600 font-medium hover:text-blue-700 transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 7.5L7.5 3m0 0L12 7.5M7.5 3v13.5m13.5 3L16.5 21m0 0L12 16.5m4.5 4.5V7.5"/>
+        </svg>
+        Lihat File
+      </a>
+    </div>
+  </nav>
+
+  <!-- Main -->
+  <main class="max-w-2xl mx-auto px-6 py-10">
+
+    <!-- Page header -->
+    <div class="mb-7">
+      <h1 class="text-xl font-semibold text-gray-900">Upload File</h1>
+      <p class="text-sm text-gray-500 mt-1">Pilih atau seret file ke area di bawah untuk mulai upload.</p>
+    </div>
+
+    <form action="upload.php" method="POST" enctype="multipart/form-data" id="uploadForm">
+
+      <!-- Drop Zone -->
+      <div id="dropZone"
+           onclick="document.getElementById('fileInput').click()"
+           class="relative border-2 border-dashed border-gray-300 rounded-2xl bg-white px-6 py-12 text-center cursor-pointer transition-all duration-150 hover:border-blue-400 hover:bg-blue-50/40 group">
+        <div class="flex flex-col items-center gap-3 pointer-events-none">
+          <div class="w-12 h-12 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center group-hover:bg-blue-100 transition-colors">
+            <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V9.75m0 0l-3 3m3-3l3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.338-2.32 5.75 5.75 0 011.045 11.095"/>
+            </svg>
+          </div>
+          <div>
+            <p class="text-sm font-medium text-gray-700">Seret file ke sini</p>
+            <p class="text-xs text-gray-400 mt-0.5">atau <span class="text-blue-600 font-medium">klik untuk memilih</span></p>
+          </div>
+          <p class="text-xs text-gray-400 bg-gray-50 px-3 py-1 rounded-full border border-gray-200">
+            Semua jenis file &bull; Bisa pilih beberapa sekaligus
+          </p>
+        </div>
+      </div>
+
+      <input type="file" name="files[]" id="fileInput" multiple class="hidden">
+
+      <!-- Preview List -->
+      <div id="previewList" class="hidden mt-5">
+        <div class="flex items-center justify-between mb-3">
+          <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Preview sebelum upload</p>
+          <span id="fileCount" class="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full"></span>
+        </div>
+        <div id="previewItems" class="space-y-2"></div>
+      </div>
+
+      <!-- Upload Button -->
+      <button type="submit" id="btnUpload"
+              class="hidden w-full mt-5 bg-blue-600 hover:bg-blue-700 active:scale-[.99] text-white text-sm font-semibold py-3 px-4 rounded-xl transition-all duration-150 flex items-center justify-center gap-2 shadow-sm">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/>
+        </svg>
+        Upload Sekarang
+      </button>
+
+    </form>
+
+    <!-- Info footer -->
+    <p class="mt-6 text-center text-xs text-gray-400">
+      File akan disimpan di folder <code class="bg-gray-100 px-1.5 py-0.5 rounded text-gray-500">uploads/</code>
+    </p>
+
+  </main>
+
+<script>
+  let selectedFiles = [];
+  const IMAGE_EXTS = ['jpg','jpeg','png','gif','webp','bmp','svg'];
+
+  function getExt(name) { return name.split('.').pop().toLowerCase(); }
+
+  function fileIcon(ext) {
+    const map = {
+      pdf:'📄', zip:'🗜', rar:'🗜', '7z':'🗜',
+      doc:'📝', docx:'📝', xls:'📊', xlsx:'📊',
+      ppt:'📋', pptx:'📋', txt:'📃',
+      mp4:'🎬', mov:'🎬', avi:'🎬',
+      mp3:'🎵', wav:'🎵',
+      php:'⚙️', js:'⚙️', py:'⚙️',
+    };
+    return map[ext] || '📁';
+  }
+
+  function formatSize(bytes) {
+    if (bytes < 1024)    return bytes + ' B';
+    if (bytes < 1048576) return (bytes/1024).toFixed(1) + ' KB';
+    return (bytes/1048576).toFixed(1) + ' MB';
+  }
+
+  function syncInput() {
+    const dt = new DataTransfer();
+    selectedFiles.forEach(f => dt.items.add(f.file));
+    document.getElementById('fileInput').files = dt.files;
+  }
+
+  function renderPreviews() {
+    const container = document.getElementById('previewItems');
+    const list      = document.getElementById('previewList');
+    const btn       = document.getElementById('btnUpload');
+    const counter   = document.getElementById('fileCount');
+
+    if (selectedFiles.length === 0) {
+      list.classList.add('hidden');
+      btn.classList.add('hidden');
+      container.innerHTML = '';
+      return;
+    }
+
+    list.classList.remove('hidden');
+    btn.classList.remove('hidden');
+    counter.textContent = selectedFiles.length + ' file';
+
+    selectedFiles.forEach((item, idx) => {
+      if (item.rendered) return;
+      item.rendered = true;
+
+      const ext     = getExt(item.file.name);
+      const isImage = IMAGE_EXTS.includes(ext);
+
+      const div = document.createElement('div');
+      div.id = 'prev-' + idx;
+      div.className = 'flex items-center gap-3 bg-white border border-gray-200 rounded-xl px-3 py-2.5 hover:border-gray-300 transition-colors';
+
+      // Thumb
+      const thumbDiv = document.createElement('div');
+      thumbDiv.className = 'w-11 h-11 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100 flex items-center justify-center';
+
+      if (isImage) {
+        const img = document.createElement('img');
+        img.alt = item.file.name;
+        img.className = 'w-full h-full object-cover';
+        const reader = new FileReader();
+        reader.onload = e => { img.src = e.target.result; };
+        reader.readAsDataURL(item.file);
+        thumbDiv.appendChild(img);
+      } else {
+        const span = document.createElement('span');
+        span.className = 'text-xl leading-none';
+        span.textContent = fileIcon(ext);
+        thumbDiv.appendChild(span);
+      }
+
+      // Info
+      const infoDiv = document.createElement('div');
+      infoDiv.className = 'flex-1 min-w-0';
+      infoDiv.innerHTML = `
+        <p class="text-sm font-medium text-gray-800 truncate" title="${item.file.name}">${item.file.name}</p>
+        <p class="text-xs text-gray-400 mt-0.5">${formatSize(item.file.size)}</p>
+      `;
+
+      // Badge ekstensi
+      const badge = document.createElement('span');
+      badge.className = 'text-xs font-medium text-gray-500 bg-gray-100 px-2 py-0.5 rounded-md flex-shrink-0 uppercase';
+      badge.textContent = ext || 'file';
+
+      // Remove btn
+      const btnRemove = document.createElement('button');
+      btnRemove.type = 'button';
+      btnRemove.title = 'Hapus dari daftar';
+      btnRemove.className = 'flex-shrink-0 w-7 h-7 flex items-center justify-center rounded-lg text-gray-300 hover:bg-red-50 hover:text-red-400 transition-colors ml-1';
+      btnRemove.innerHTML = `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>`;
+      btnRemove.addEventListener('click', () => removeFile(idx));
+
+      div.appendChild(thumbDiv);
+      div.appendChild(infoDiv);
+      div.appendChild(badge);
+      div.appendChild(btnRemove);
+      container.appendChild(div);
+    });
+  }
+
+  function removeFile(idx) {
+    const el = document.getElementById('prev-' + idx);
+    if (el) el.remove();
+    selectedFiles.splice(idx, 1);
+
+    selectedFiles.forEach((item, i) => {
+      const el = document.getElementById('prev-' + (i >= idx ? i + 1 : i));
+      if (el) el.id = 'prev-' + i;
+      const btn = document.querySelector('#prev-' + i + ' button');
+      if (btn) {
+        const clone = btn.cloneNode(true);
+        btn.replaceWith(clone);
+        clone.addEventListener('click', () => removeFile(i));
+      }
+    });
+
+    syncInput();
+    renderPreviews();
+  }
+
+  function addFiles(fileList) {
+    Array.from(fileList).forEach(file => {
+      selectedFiles.push({ file, rendered: false });
+    });
+    syncInput();
+    renderPreviews();
+  }
+
+  document.getElementById('fileInput').addEventListener('change', function() {
+    addFiles(this.files);
+  });
+
+  const dz = document.getElementById('dropZone');
+  dz.addEventListener('dragover',  e => { e.preventDefault(); dz.classList.add('drop-active'); });
+  dz.addEventListener('dragleave', () => dz.classList.remove('drop-active'));
+  dz.addEventListener('drop', e => {
+    e.preventDefault();
+    dz.classList.remove('drop-active');
+    addFiles(e.dataTransfer.files);
+  });
+</script>
+</body>
+</html>
